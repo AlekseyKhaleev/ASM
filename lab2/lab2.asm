@@ -8,20 +8,23 @@ in_str db 22 dup (?)
 mess2 db 10,13,'Output:',10,13,'$'
 out_str db 20 dup ('$')
 d1 ends
+
 c1 segment para public 'code'
 assume cs:c1,ds:d1,ss:st1
-start:		mov ax,d1
+start:
+        mov ax,d1
 		mov ds,ax
-;vivod		
+;приглашение ввода
 		mov dx,offset mess1
 		mov ah,9
 		int 21h	
-;vvod
+;ввод
 		mov dx,offset in_str
 		mov in_str,16
 		mov ah,10
 		int 21h
-;lab1
+
+;основная часть (код из ЛР1):
 		mov si,offset in_str+2
 		mov di,offset out_str
 		mov cl,in_str+1
@@ -38,8 +41,7 @@ m1:		mov al,[si]
 m2:		inc si
 		loop m1
 
-;res
-			
+;вывод результата:
 		mov dx,offset mess2
 		mov ah,9
 		int 21h
@@ -47,15 +49,17 @@ m2:		inc si
 		mov dx,offset out_str
 		mov ah,9
 		int 21h
-;key
+;задержка (ожидание нажатия клавиши):
 		mov ah,7
 		int 21h
-;fin
+;завершение:
 		mov ax,4c00h
 		int 21h
 c1 ends
+
 st1 segment para stack 'stack'
 	dw 100 dup (?)
 st1 ends
+
 end start
 	

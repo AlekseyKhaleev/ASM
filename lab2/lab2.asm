@@ -27,18 +27,29 @@ start:
 ;основная часть (код из ЛР1):
 		mov si,offset in_str+2
 		mov di,offset out_str
-		mov cl,in_str+1
+		xor ah, ah  ; Очистка старшего байта ax
+		mov al,in_str+1
+		xor dx, dx ; Очистите dx перед div, так как div использует dx:ax
+        mov bl, 2  ; Делитель
+        div bl     ; ax/bl -> результат в al, остаток в ah
+        mov cl, al
+        test ah, ah ; Проверьте, есть ли остаток
+        jz noRemainder ; Если остатка нет, перейдите к метке noRemainder
+        inc cl      ; Если был остаток, увеличьте cl на 1
+noRemainder:
+        ; Здесь cl содержит количество слов, учитывая нечетное количество байт
 		xor ch,ch
-m1:		mov al,[si]
-		cmp al,'A'
-		je m2
-		cmp al,'H'
-		je m2
-		cmp al,'Z'
-		je m2
-		mov [di],al
-		inc di
-m2:		inc si
+m1:		mov ax,[si]
+;        xchg ah, al ; обменять местами старший и младший байты
+;		cmp ah,'3'
+;		je m2
+;		cmp ax,'4'
+;		je m2
+;		cmp ax,'5'
+;		je m2
+		mov [di], ax
+		add di, 2
+m2:		add si, 2
 		loop m1
 
 ;вывод результата:

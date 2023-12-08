@@ -1,23 +1,19 @@
 ;пересылка слов(W) из in_str в out_str 21-ВМз-4 07/12/2023
 ;слова, не равные '01' ~ 3031h, '23' ~ 3233h, '45' ~ 3435h
-
-d1 segment para public 'data'
+.model tiny
+.data
 mess1 db '21_vmz_4|A_Khaleev Input:',10,13,'$'
 mess2 db 10,13,'Output:',10,13,'$'
 in_str db 22 dup (?)
 out_str db 22 dup ('$')
-d1 ends
 
-c1 segment para public 'code'
-assume cs:c1,ds:d1,ss:st1
+.code
+ORG 100h ; COM-программы начинаются с этой точки
 start:
-;устанавливаем явно сегментный регистр данных:
-        mov ax,d1
-		mov ds,ax
 ;приглашение ввода:
 		mov dx,offset mess1
 		mov ah,9
-		int 21h
+		int 21h	
 ;ввод:
 		mov dx,offset in_str
 		mov in_str, 16 ; ограничиваем ввод 16ю байтами
@@ -69,10 +65,6 @@ cmp_true:
 ;завершение:
 		mov ax,4c00h
 		int 21h
-c1 ends
-
-st1 segment para stack 'stack'
-	dw 100 dup (?)
-st1 ends
 
 end start
+	

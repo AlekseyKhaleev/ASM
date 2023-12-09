@@ -1,0 +1,132 @@
+Turbo Assembler	 Version 2.51	     12/09/23 22:25:27	    Page 1
+lab2_b~1.asm
+
+
+
+      1	0000			     .model tiny
+      2
+      3				     ; Объявляем макрос,	который ожидает нажатия любой	    +
+      4				     клавиши пользователем
+      5				     anykey macro
+      6					 mov ah,7  ; Устанавливаем	7 в AH, что	соответствует	    +
+      7				     функции "ввод без эха" в	DOS, прерывание 21h
+      8					 int 21h   ; Вызываем прерывание DOS 21h, что позволяет	    +
+      9				     программе	ожидать нажатия клавиши пользователем
+     10				     endm
+     11
+     12	0000			     .code
+     13				     org 100h
+     14	0100			     main:
+     15	0100  B8 0003			 mov ax,3	   ; Устанавливаем	видеорежим
+     16	0103  CD 10			 int 10h	   ; Вызываем прерывание для установки	    +
+     17				     видеорежима
+     18	0105  8E 06 0000r		 mov es,seg_video  ; Устанавливаем	сегмент видео памяти
+     19	0109  E8 0008			 call show_bios_str; Вызываем процедуру, которая		    +
+     20				     показывает строку "BIOS DATE:"
+     21	010C  E8 001D			 call show_date	   ; Вызываем процедуру, которая		    +
+     22				     показывает дату BIOS
+     23					 anykey		   ; Ожидаем нажатия любой клавиши		    +
+     24				     пользователем
+1    25	010F  B4 07			 mov ah,7  ; Устанавливаем	7 в AH, что	соответствует	    +
+     26				     функции "ввод без эха" в	DOS, прерывание 21h
+1    27	0111  CD 21			 int 21h   ; Вызываем прерывание DOS 21h, что позволяет	    +
+     28				     программе	ожидать нажатия клавиши пользователем
+     29	0113  C3			 ret		   ; Возвращаем управление операционной	    +
+     30				     системе
+     31
+     32				     ; Процедура для вывода строки "BIOS DATE:"
+     33	0114			     show_bios_str proc
+     34	0114  B9 000A 90		 mov cx,N	   ; Загружаем	количество символов в строке
+     35	0118  BF 02B8			 mov di,696	   ; Устанавливаем	позицию,	где будет	    +
+     36				     выводиться строка на экране
+     37	011B  B4 2E			 mov ah,2Eh	   ; Устанавливаем	цвет текста (желтый	    +
+     38				     текст	на зеленом фоне: bin = 0010 1110)
+     39	011D  BE 0004r			 mov si, offset	mess  ;	Загружаем смещение строки
+     40	0120			     print_loop:	   ; Начало цикла печати
+     41	0120  8A 04			 mov al,[si]	   ; Загружаем	символ из строки
+     42	0122  26: 89 05			 mov es:[di],ax	   ; Выводим символ на экран
+     43	0125  83 C7 02			 add di,2	   ; Переходим	к следующей позиции на	    +
+     44				     экране
+     45	0128  46			 inc si		   ; Переходим	к следующему	символу в	    +
+     46				     строке
+     47	0129  E2 F5			 loop print_loop   ; Повторяем	цикл, пока не	будут выведены +
+     48				     все символы
+     49	012B  C3			 ret
+     50	012C			     show_bios_str endp
+     51
+     52				     ; Процедура для вывода даты BIOS
+     53	012C			     show_date proc
+     54	012C  B9 0008			 mov cx,8	   ; Загружаем	количество символов в дате   +
+     55				     BIOS
+     56	012F  8E 1E 0002r		 mov ds,seg_bios   ; Загружаем	сегмент BIOS
+     57	0133  BE 0005			 mov si,5	   ; Загружаем	начальное смещение для	    +
+Turbo Assembler	 Version 2.51	     12/09/23 22:25:27	    Page 2
+lab2_b~1.asm
+
+
+
+     58				     чтения даты из	BIOS
+     59	0136  BF 02D0			 mov di,720	   ; Загружаем	позицию,	где будет		    +
+     60				     выводиться дата на	экране
+     61	0139  B4 0A			 mov ah,0Ah	   ; Устанавливаем	цвет даты (зеленый текст+
+     62				     на черном фоне: bin = 0000 1010)
+     63	013B			     date_loop:		   ; Начало цикла вывода даты
+     64	013B  8A 04			 mov al,[si]	   ; Загружаем	байт даты из BIOS
+     65	013D  26: 89 05			 mov es:[di],ax	   ; Выводим байт даты на экран
+     66	0140  83 C7 02			 add di, 2	   ; Переходим	к следующей позиции на	    +
+     67				     экране
+     68	0143  46			 inc si		   ; Переходим	к следующему	байту даты в BIOS
+     69	0144  E2 F5			 loop date_loop	   ; Повторяем	цикл, пока не	будут выведены +
+     70				     все символы даты
+     71	0146  C3			 ret
+     72	0147			     show_date endp
+     73
+     74				     ; данные:
+     75	0147			     .data
+     76	0000  B800		     seg_video dw 0B800h   ; Сегмент видео памяти
+     77	0002  FFFF		     seg_bios dw 0FFFFh	   ; Сегмент BIOS
+     78	0004  42 49 4F 53 20 44	41+  mess db 'BIOS DATE:'  ; Строка, которую мы будем выводить на	    +
+     79	      54 45 3A		     экран
+     80	      =	000A		     N=$-mess		   ; Вычисляем	количество символов в строке
+     81				     end main
+Turbo Assembler	 Version 2.51	     12/09/23 22:25:27	    Page 3
+Symbol Table
+
+
+
+
+Symbol Name			  Type	 Value
+
+??DATE				  Text	 "12/09/23"
+??FILENAME			  Text	 "lab2_b~1"
+??TIME				  Text	 "22:25:27"
+??VERSION			  Number 0205
+@CODE				  Text	 DGROUP
+@CODESIZE			  Text	 0
+@CPU				  Text	 0101H
+@CURSEG				  Text	 _DATA
+@DATA				  Text	 DGROUP
+@DATASIZE			  Text	 0
+@FILENAME			  Text	 LAB2_B~1
+@MODEL				  Text	 1
+@WORDSIZE			  Text	 2
+DATE_LOOP			  Near	 DGROUP:013B
+MAIN				  Near	 DGROUP:0100
+MESS				  Byte	 DGROUP:0004
+N				  Number 000A
+PRINT_LOOP			  Near	 DGROUP:0120
+SEG_BIOS			  Word	 DGROUP:0002
+SEG_VIDEO			  Word	 DGROUP:0000
+SHOW_BIOS_STR			  Near	 DGROUP:0114
+SHOW_DATE			  Near	 DGROUP:012C
+
+Macro Name
+
+ANYKEY
+
+Groups & Segments		  Bit Size Align  Combine Class
+
+DGROUP				  Group
+  _DATA				  16  000E Word	  Public  DATA
+  _TEXT				  16  0147 Word	  Public  CODE
+

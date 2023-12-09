@@ -1,44 +1,71 @@
-d1 segment para public 'data'
-mess1 db 'BIOS date:'
-n=$-mess1
-d1 ends
-c1 segment para public 'code'
-assume cs:c1, ds:d1, ss:st1
-start:	mov ax,d1
-	mov ds,ax
+.model tiny
+.code
+org 100h
+START:
+    ; Установить видеорежим 3
+    mov ah, 0
+    mov al, 3
+    int 10h
 
-	mov ax,0b800h
-	mov es,ax
-	mov di,80*2*11+30
-	mov cx,n
-	mov ah,20h
-	mov si, offset mess1
-m1:	mov al,[si]
-	mov es:[di],ax
-	inc si
-	inc di
-	inc di
-	loop m1
+    ; Получить дату BIOS
+    mov ah, 4
+    int 1Ah
 
-	mov di,80*2*12+30
-	mov cx,8
-	mov ax,0ffffh
-	mov ds,ax
-	mov si,5
-	mov ah,30h
-m2:	mov al,[si]
-	mov es:[di],ax
-	inc si
-	inc di
-	inc di
-	loop m2
-		
-	mov ax,4c00h
-   	int 21h
-c1 ends
-st1 segment para stack 'stack'
-      dw 10 dup ('$$')
-st1 ends
-end start
-	
-	
+    ; ES:DI указывает на начало видеопамяти
+    mov ax, 0B800h
+    mov es, ax
+    xor di, di
+
+    ; Выводим строку 'BIOS date: '
+    mov si, offset BIOS_date_string
+print_string:
+    lodsb
+    or al, al
+    jz print_date
+    mov [es:di], al
+    mov [es:di+1], 07h
+    add di, 2
+    jmp print_string
+
+print_date:
+    mov ax, cx ; Год
+    call number_to_string
+    mov [es:di], '/'
+    add di, 2
+    mov ax, dh ; Месяц
+    call number_to_string
+    mov [es:di], '/'
+    add di, 2
+    mov ax, dl ; День
+    call number_to_string
+
+    ; Завершить программу
+    mov ax, 4C00h
+    int 21h
+BIOS_date_string db 'BIOS date: ', 0
+number_to_string:
+    ; число в AX, указатель на буфер в DI
+    push ax
+    push bx
+    push cx
+    mov cx, 10
+convert_loop:
+    xor dx, dx
+    div cx
+    add dx, '0'
+    push dx
+    or ax, ax
+    jnz convert_loop
+write_loop:
+    pop dx
+    cmp dx, '0'
+    je end_convert
+    mov [es:di], dl
+    inc di
+    jmp write_loop
+end_convert:
+    pop cx
+    pop bx
+    pop ax
+    ret
+END START

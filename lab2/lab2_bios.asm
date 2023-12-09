@@ -1,71 +1,57 @@
 .model tiny
+
+; Объявляем макрос, который ожидает нажатия любой клавиши пользователем
+anykey macro
+    mov ah,7  ; Устанавливаем 7 в AH, что соответствует функции "ввод без эха" в DOS, прерывание 21h
+    int 21h   ; Вызываем прерывание DOS 21h, что позволяет программе ожидать нажатия клавиши пользователем
+endm
+
 .code
 org 100h
-START:
-    ; Установить видеорежим 3
-    mov ah, 0
-    mov al, 3
-    int 10h
+main:
+    mov ax,3          ; Устанавливаем видеорежим
+    int 10h           ; Вызываем прерывание для установки видеорежима
+    mov es,seg_video  ; Устанавливаем сегмент видео памяти
+    call show_bios_str; Вызываем процедуру, которая показывает строку "BIOS DATE:"
+    call show_date    ; Вызываем процедуру, которая показывает дату BIOS
+    anykey            ; Ожидаем нажатия любой клавиши пользователем
+    ret               ; Возвращаем управление операционной системе
 
-    ; Получить дату BIOS
-    mov ah, 4
-    int 1Ah
-
-    ; ES:DI указывает на начало видеопамяти
-    mov ax, 0B800h
-    mov es, ax
-    xor di, di
-
-    ; Выводим строку 'BIOS date: '
-    mov si, offset BIOS_date_string
-print_string:
-    lodsb
-    or al, al
-    jz print_date
-    mov [es:di], al
-    mov [es:di+1], 07h
-    add di, 2
-    jmp print_string
-
-print_date:
-    mov ax, cx ; Год
-    call number_to_string
-    mov [es:di], '/'
-    add di, 2
-    mov ax, dh ; Месяц
-    call number_to_string
-    mov [es:di], '/'
-    add di, 2
-    mov ax, dl ; День
-    call number_to_string
-
-    ; Завершить программу
-    mov ax, 4C00h
-    int 21h
-BIOS_date_string db 'BIOS date: ', 0
-number_to_string:
-    ; число в AX, указатель на буфер в DI
-    push ax
-    push bx
-    push cx
-    mov cx, 10
-convert_loop:
-    xor dx, dx
-    div cx
-    add dx, '0'
-    push dx
-    or ax, ax
-    jnz convert_loop
-write_loop:
-    pop dx
-    cmp dx, '0'
-    je end_convert
-    mov [es:di], dl
-    inc di
-    jmp write_loop
-end_convert:
-    pop cx
-    pop bx
-    pop ax
+; Процедура для вывода строки "BIOS DATE:"
+show_bios_str proc
+    mov cx,N          ; Загружаем количество символов в строке
+    mov di,696        ; Устанавливаем позицию, где будет выводиться строка на экране
+    mov ah,2Eh        ; Устанавливаем цвет текста (желтый текст на зеленом фоне: bin = 0010 1110)
+    mov si, offset mess  ; Загружаем смещение строки
+print_loop:           ; Начало цикла печати
+    mov al,[si]       ; Загружаем символ из строки
+    mov es:[di],ax    ; Выводим символ на экран
+    add di,2          ; Переходим к следующей позиции на экране
+    inc si            ; Переходим к следующему символу в строке
+    loop print_loop   ; Повторяем цикл, пока не будут выведены все символы
     ret
-END START
+show_bios_str endp
+
+; Процедура для вывода даты BIOS
+show_date proc
+    mov cx,8          ; Загружаем количество символов в дате BIOS
+    mov ds,seg_bios   ; Загружаем сегмент BIOS
+    mov si,5          ; Загружаем начальное смещение для чтения даты из BIOS
+    mov di,720        ; Загружаем позицию, где будет выводиться дата на экране
+    mov ah,0Ah        ; Устанавливаем цвет даты (зеленый текст на черном фоне: bin = 0000 1010)
+date_loop:            ; Начало цикла вывода даты
+    mov al,[si]       ; Загружаем байт даты из BIOS
+    mov es:[di],ax    ; Выводим байт даты на экран
+    add di, 2         ; Переходим к следующей позиции на экране
+    inc si            ; Переходим к следующему байту даты в BIOS
+    loop date_loop    ; Повторяем цикл, пока не будут выведены все символы даты
+    ret
+show_date endp
+
+; данные:
+.data
+seg_video dw 0B800h   ; Сегмент видео памяти
+seg_bios dw 0FFFFh    ; Сегмент BIOS
+mess db 'BIOS DATE:'  ; Строка, которую мы будем выводить на экран
+N=$-mess              ; Вычисляем количество символов в строке
+end main

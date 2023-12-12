@@ -101,6 +101,7 @@ start:
         push cx
         print input_mess  ;вывод сообщения о вводе строки
         input in_str      ;ввод числа в виде строки
+
         ; проверки, заполнение массивов
         xor si, si
         mov si, offset in_str

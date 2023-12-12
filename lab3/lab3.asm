@@ -19,12 +19,15 @@ input macro text ;ввод строки символов
     ; запись ввода в буфер text
 	mov dx,offset text
 	mov ah,0ah
+.retry:
 	int 21h
 
 	; проверка на ввод ctrl+x (= выход)
 	add dx, 2
 	mov bx, dx
-	mov bx, [bx]
+	mov bl, [bx]
+	cmp bl, 1
+    je .retry
 	cmp bl, 18h
 	je exit
 
@@ -61,7 +64,7 @@ endm
     input_mess db 'Enter number: $'
     carret db 10, '$'
     tmp_num db 7 dup(0)
-    in_str db 9, 8 dup (0)    ;строка символов (не более 9)
+    in_str db 6, ?, 6 dup (?)    ;строка символов (не более 6)
     out_str db 6 dup (' '),'$'
 
 
@@ -83,17 +86,17 @@ start:
 ;цикл ввода, di - номер числа в массиве
     mov cx, NUMS_SIZE ; в cx - размер массива
 
-vvod:
-    push cx
-    print input_mess  ;вывод сообщения о вводе строки
-    input in_str      ;ввод числа в виде строки
-    ; проверки, заполнение массивов
-    xor dx, dx
-    mov dx, offset in_str
-    call to_decimal
+    vvod:
+        push cx
+        print input_mess  ;вывод сообщения о вводе строки
+        input in_str      ;ввод числа в виде строки
+        ; проверки, заполнение массивов
+        xor si, si
+        mov si, offset in_str
+        call to_decimal
 
-    print carret
-    loop vvod
+        print carret
+        loop vvod
     jmp exit
 
 exit:
@@ -103,32 +106,55 @@ exit:
     int 21h
 
 to_decimal proc
-    ; dx - string address
-    push cx
-    push bx
-    push ax
+    ; si - string address
+    ;   1b: size str
+    ;   2b: true symbols size
+    ;   3- size-1b: content
+
+    push ax ; 30h
+    push bx ; ascii code
+    push cx ; counter
+    push di ; tmp_num
 
     xor ax, ax
     xor bx, bx
 
     mov al, 30h
-    inc dx
-    mov cx, [offset dx]
+    mov di, offset tmp_num
+
+    ; counter
+    inc si
+    mov cx, [si]
     xor ch, ch
-    inc dx
+    mov [di], cl
+;    dec cx
+
+    inc di
+    inc si
+
+    cmp byte ptr [si], 2dh
+        jne .cycle
+        mov bx, [si]
+        xor bh, bh
+        mov [di], bl
+        inc si
+        inc di
+        dec cx
+
     .cycle:
-        cmp byte ptr [dx], 2dh
-        jne .positive
-        inc dx
-    .positive:
-        mov bx, [offset dx]
+        mov bx, [si]
         xor bh, bh
         sub bx, ax
-        mov [offset dx], bl
-        dec cl
+        mov [di], bl
+        inc si
+        inc di
         loop .cycle
+
+    pop di
     pop cx
     pop bx
+    pop ax
+    ret
 
 to_decimal endp
 

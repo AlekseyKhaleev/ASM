@@ -72,17 +72,18 @@ endm
 .data
     NUMS_SIZE        equ 5h
     NEGATIVE         equ 2Dh
-    MAX_DIGITS_COUNT equ 5h
+    MAX_POS_COUNT    equ 5h
+    MAX_NEG_COUNT    equ 6h
     POS_LAST         equ 37h
     NEG_LAST         equ 38h
 
     MAX_NUM db '3276' ; старшие разряды модуля максимального числа без последнего разряда
 
-    start_mess db 'Input:5 numbers in [-32768, 32767]',10,13, 'Press <Enter> after each number',10,13,'$'
+    start_mess db 'Input:5 numbers in [-32768, 32767]', 10, 'Press <Enter> after each number',10,13,'$'
     input_mess db 'Enter number: $'
     empty_mess db 'Input Error: empty string. Try again or use ctrl+x and press enter for exit.', 10, '$'
-    exit_mess  db 'Program was aborted by keybord', 10 ,'$'
-    err_mess db 'Input error!','$'
+    exit_mess  db 'Program was aborted by keybord', 10, '$'
+    err_mess db 'Input error!', 10, '$'
     carret     db 10, '$'
 
     tmp_num db 7 dup(0)
@@ -90,14 +91,14 @@ endm
     out_str db 6 dup (' '),'$'
 
     neg_flag db 0
-    flag_err db 0
+    err_flag db 0
 
 .stack 256
 
 .code
 start:
-    mov ax,@data
-    mov ds,ax
+    mov ax, @data
+    mov ds, ax
 
 ;вызов функции 0 -  установка 3 текстового видеорежима, очистка экрана
     mov ax,0003  ;ah=0 (номер функции),al=3 (номер режима)
@@ -107,18 +108,24 @@ start:
 ;цикл ввода, di - номер числа в массиве
     mov cx, NUMS_SIZE ; в cx - размер массива
 
-    vvod:
-        push cx
+    .input:
         print input_mess  ;вывод сообщения о вводе строки
         input in_str      ;ввод числа в виде строки
 
         ; проверки, заполнение массивов
+        ; проверка на корректность символов числа
+        call is_correct
+        cmp err_flag, 0
+        je .correct_input
+        print err_mess
+        jmp .input
+
+    .correct_input:
         xor si, si
         mov si, offset in_str
         call to_decimal
-
         print carret
-        loop vvod
+        loop .input
     jmp exit
 
 exit:
@@ -196,57 +203,106 @@ is_correct proc
     ; число должно быть записано в буфер in_str
     ; корректный диапазон - [-32768, 32767]
 
+    ; сохраняем состояние регистров
     push ax ; используется для хранения текущего символа
     push bx ; используется для хранения индекса в диапазоне
-    push cx ; используется для хранения индекса в числе
+    push cx ; используется для хранения количества обработанных символов числа
     push dx ; используется для хранения последнего символа диапазона в зависимости от знака
+    push si ; используется для хранения индекса числа
+    push di ; используется для хранения индекса по которому записано количество введенных символов
 
+    ; очистка
     xor ax, ax
     xor bx, bx
     xor cx, cx
     xor dx, dx
+    xor si, si
+    xor di, di
+
+    mov di, offset in_str
+    inc di
+    mov di, [di]    ; загружаем 2 первых байта из in_str  di
+    and di, 00FFh   ; очищаем старший байт
 
     mov neg_flag, 0 ; флаг для хранения знака числа
-    mov cl, 2      ; Инициализация текущего индекса
-    mov bl, 0
+    mov err_flag, 0 ; флаг для определения ошибки ввода
+    mov si, 2       ; Инициализация текущего индекса числа
+    mov bx, 0       ; Инициализация текущего индекса в максимальном диапазоне
 
-    mov al, in_str[cl]; Загрузка текущего элемента буфера в AL
+    mov al, in_str[si]; Загрузка текущего элемента буфера в AL
     cmp al, NEGATIVE
-    jne .iterate
+    jne .is_num_cycle      ; если первый символ не '-'
     mov neg_flag, 1
-    inc cl
-.is_num_cycle:
+    inc si
+    inc cx
 
-; здесь должна быть проверка количества символов если оно максимальное то идем в .range_cycle
+; проверка: является ли числом каждый введенный символ символ (не включая первый минус)
+.is_num_cycle:
+    cmp cx, di
+    ; здесь должна быть проверка на превышение количества цифр для положительных цифр?
+    je .max_digits_check ; выход из цикла
+    mov al, in_str[si]
+    cmp al, 30h
+    jl .error
+    cmp al, 39h
+    jg .error
+    inc cx
+    inc si
+    jmp .is_num_cycle
+
+.max_digits_check:
+    xor cx, cx
+    xor si, si
+
+    cmp neg_flag, 0
+    je .pos_start
+    cmp di, MAX_NEG_COUNT
+    jl .corr_end
+    mov si, 3
+    mov cx, 1
+    jmp .range_cycle
+
+.pos_start:
+    cmp di, MAX_POS_COUNT
+    jl .corr_end
+    mov si, 2
 
 .range_cycle:
-    mov al, in_str[cl] ; Загрузка текущего элемента буфера в AL
+    mov al, in_str[si] ; Загрузка текущего элемента буфера в AL
     cmp al, MAX_NUM[bx]
     jne .error
-    inc cl            ; Увеличение индекса числа
-    inc bl            ; Увеличение индекса диапазона
-    cmp cl, in_str[1] ; Проверка, достигнут ли конец буфера
+    inc si            ; Увеличение индекса числа
+    inc cx
+    inc bx            ; Увеличение индекса диапазона
+    cmp cx, di ; Проверка, достигнут ли конец буфера
     je .end_range     ; Если да, прерывание цикла
     jmp .range_cycle  ; Переход на следующую итерацию цикла
 
 .end_range:           ; проверка последнего символа если число значащих цифр равно максимальному
     cmp neg_flag, 1
     je .negative
-    mov dx, POS_LAST
+    mov dl, POS_LAST
     jmp .continue
 .negative:
-    mov dx, NEG_LAST
+    mov dl, NEG_LAST
 .continue:
-    cmp dx, al
+    mov al, in_str[si]
+    cmp al, dl
     jne .error        ; если есть выход за границу диапазона переход к ошибке
     jmp .corr_end
 
 .error:
-    print overflow_mess
     mov err_flag, 1
 
 .corr_end:
+    pop di
+    pop si
+    pop dx
+    pop cx
+    pop bx
+    pop ax
     ret
+
 is_correct endp
 
 end start

@@ -83,7 +83,7 @@ endm
     input_mess db 'Enter number: $'
     empty_mess db 'Input Error: empty string. Try again or use ctrl+x and press enter for exit.', 10, '$'
     exit_mess  db 'Program was aborted by keybord', 10, '$'
-    err_mess db 'Input error!', 10, '$'
+    err_mess   db 'Input error!', 10, '$'
     carret     db 10, '$'
 
     tmp_num db 7 dup(0)
@@ -121,9 +121,11 @@ start:
         jmp .input
 
     .correct_input:
+        ; здесь установлен флаг отрицательного числа
         xor si, si
         mov si, offset in_str
         call to_decimal
+        ; call add_num_to_array proc
         print carret
         loop .input
     jmp exit
@@ -258,23 +260,27 @@ is_correct proc
     je .pos_start
     cmp di, MAX_NEG_COUNT
     jl .corr_end
+    jg .error
     mov si, 3
-    mov cx, 1
+    mov cx, 2         ; значение больше на 1 чем действительное чтобы выйти из range_cycle раньше на 1 символ
     jmp .range_cycle
 
 .pos_start:
     cmp di, MAX_POS_COUNT
     jl .corr_end
+    jg .error
     mov si, 2
+    inc cx
 
 .range_cycle:
     mov al, in_str[si] ; Загрузка текущего элемента буфера в AL
     cmp al, MAX_NUM[bx]
-    jne .error
+    jg .error
+    jl .corr_end
     inc si            ; Увеличение индекса числа
-    inc cx
-    inc bx            ; Увеличение индекса диапазона
-    cmp cx, di ; Проверка, достигнут ли конец буфера
+    inc cx            ; Увеличение счетчика обработанных цифр
+    inc bx            ; Увеличение индекса в строке содержащей максимальные цифры диапазона
+    cmp cx, di        ; Проверка, достигнут ли конец буфера
     je .end_range     ; Если да, прерывание цикла
     jmp .range_cycle  ; Переход на следующую итерацию цикла
 
@@ -288,7 +294,7 @@ is_correct proc
 .continue:
     mov al, in_str[si]
     cmp al, dl
-    jne .error        ; если есть выход за границу диапазона переход к ошибке
+    jg .error        ; если есть выход за границу диапазона переход к ошибке
     jmp .corr_end
 
 .error:

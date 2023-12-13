@@ -89,6 +89,9 @@ endm
     tmp_num    db 6 dup(0)
     in_str     db 7, ?, 6 dup (?)    ;строка символов (не более 6)
     out_str    db 6 dup (' '),'$'
+    pos_array  db 0, 5 dup(5 dup(?)) ; объявление массива для пяти положительных двоично-десятичных чисел размером 6 байт
+    neg_array  db 0, 5 dup(5 dup(?)) ; объявление массива для пяти отрицательных двоично-десятичных чисел размером 6 байт
+    ; первый байт для размера записанных чисел
 
     neg_flag   db 0
     err_flag   db 0
@@ -100,6 +103,7 @@ start:
     mov ax, @data
     mov ds, ax
 
+
 ;вызов функции 0 -  установка 3 текстового видеорежима, очистка экрана
     mov ax,0003  ;ah=0 (номер функции),al=3 (номер режима)
     int 10h
@@ -107,6 +111,8 @@ start:
 
 ;цикл ввода, di - номер числа в массиве
     mov cx, NUMS_SIZE ; в cx - размер массива
+    mov si, offset pos_array + 1
+    mov di, offset neg_array + 1
 
     .input:
         print input_mess  ;вывод сообщения о вводе строки
@@ -114,7 +120,7 @@ start:
 
         ; проверки, заполнение массивов
         ; проверка на корректность символов числа
-        call is_correct
+;        call is_correct
         cmp err_flag, 0
         je .correct_input
         print err_mess
@@ -122,10 +128,8 @@ start:
 
     .correct_input:
         ; здесь установлен флаг отрицательного числа
-        xor si, si
-        mov si, offset in_str
         call to_decimal
-        ; call add_num_to_array proc
+        call add_value
         print carret
         loop .input
     jmp exit
@@ -135,11 +139,55 @@ exit:
     mov al, 0
     int 21h
 
+add_value proc
+    ; в si адрес очередного элемента в массиве положительных чисел
+    ; в di адрес очередного элемента в массиве отрицательных чисел
+    ; в tmp_num значение очередного введенного числа которое нужно скопировать
+    ; в массивы записываем только модули, увеличиваем количество записанных чисел
+    push ax
+    push bx
+    push cx
+
+    xor cx, cx
+    mov cx, 5
+
+    mov bx, offset tmp_num
+    mov al, [bx]
+    inc bx   ; перемещаем указатель на первый символ
+    cmp al, 0
+    je .pos_num
+    mov al, neg_array
+    inc al
+    mov neg_array, al
+
+.neg_cycle:
+    mov al, [bx]
+    mov [di], al
+    inc bx
+    inc di
+    loop .neg_cycle
+.pos_num:
+    mov al, pos_array
+    inc al
+    mov pos_array, al
+.pos_cycle:
+    mov al, [bx]
+    mov [si], al
+    inc bx
+    inc si
+    loop .pos_cycle
+
+    pop cx
+    pop bx
+    pop ax
+    ret
+add_value endp
+
 to_decimal proc
     ; Процедура для перевода числа из ascii в десятичное представление. Знак минуса останется ascii
     ; также в выходном массиве первый байт для учета знака (0 неотрицательное(положительное), 1 - отрицательное)
     ; все числа будут выровнены по разрядам (дополнены незначащими нулями)
-    ; В регистре si ожидается адрес буфера ввода
+    ; В in_str содержится буфер ввода
     ;   1й байт: размер буфера
     ;   2й байт: количество действительных символов (включая знак минус)
     ;   с первого по предпоследний: ascii символы введенного числа
@@ -153,12 +201,15 @@ to_decimal proc
     push cx ; используется в роли счетчика обработанных символов
     push di ; используется для адресных операций записи в буфер tmp_num
     push dx ; используется для хранения количества незначащих нулей
+    push si ; используется для адресации входного буфера
 
     ; предварительная очистка регистров
     xor ax, ax
     xor bx, bx
     xor dx, dx
+    xor si, si
 
+    mov si, offset in_str
     ; начальная инициализация
     mov al, 30h
     mov di, offset tmp_num
@@ -203,6 +254,7 @@ to_decimal proc
         loop .cycle
 
     ; восстанавливаем исходное состояние регистров
+    pop si
     pop dx
     pop di
     pop cx

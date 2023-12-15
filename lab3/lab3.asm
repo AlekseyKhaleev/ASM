@@ -1,4 +1,5 @@
 .MODEL SMALL
+locals
 
 print macro text ;вывод сообщений на экран
 	push ax
@@ -10,25 +11,11 @@ print macro text ;вывод сообщений на экран
 	pop ax
 endm
 
-clear_tmp_num macro
-    push si
-    push cx
-    mov cx, 10
-    lea si, tmp_num
-    clear_loop:
-        mov byte ptr [si], 0
-        inc si
-        loop clear_loop
-    pop cx
-    pop si
-endm
-
 input macro text ;ввод строки символов
     ; сохранение состояния в стеке
 	push ax
 	push dx
 	push bx
-
     ; запись ввода в буфер text
 .retry:
 	mov dx,offset text
@@ -57,7 +44,6 @@ input macro text ;ввод строки символов
     pop bx
 	pop dx
 	pop ax
-
 
 endm
 
@@ -130,12 +116,6 @@ start:
     mov ax, @data
     mov ds, ax
 
-    ; проверка сложения
-    mov si, offset num1
-    mov di, offset num2
-    mov bx, offset tmp_num
-    call mul_values
-
     ;вызов функции 0 -  установка 3 текстового видеорежима, очистка экрана
     mov ax, 0003  ; ah=0 (номер функции), al=3 (номер режима)
     int 10h
@@ -164,9 +144,14 @@ start:
 
     .correct_input:
         call to_bin_decimal  ; преобразование in_str к двоично-десятичному виду в tmp_num (с незначащими нулями)
-        call add_value   ; копирование модуля из tmp_num в соответствующий массив
-        print carret     ; печать переноса строки
-        loop .input      ; цикл ввода
+        call add_value       ; копирование модуля из tmp_num в соответствующий массив
+        print carret         ; печать переноса строки
+        loop .input          ; цикл ввода
+
+    ; здесь массивы pos_array и neg_array заполнены модулями соответствующих по знаку введенных чисел
+    call fill_mul_array
+    mov bx, offset mul_array
+
     jmp exit
 
 exit:
@@ -174,6 +159,100 @@ exit:
     mov ah, 4ch
     mov al, 0
     int 21h
+
+clear_tmp_num proc
+    push si
+    push cx
+    mov cx, 10
+    lea si, tmp_num
+    @@cycle:
+        mov byte ptr [si], 0
+        inc si
+        loop @@cycle
+    pop cx
+    pop si
+clear_tmp_num endp
+
+fill_mul_array proc
+    ; процедура для заполнения массива mul_array попарными произведениями положительных и отрицательных чисел
+    ; ожидается что произведен ввод с клавиатуры чисел, числа приведены к двоично-десятичному виду
+    ; массивы pos_array и neg_array заполнены модулями положительных и отрицательных чисел соответственно
+
+    ; инициализация счетчика размером меньшего массива
+
+    ; сохраняем состояние
+    push ax
+    push bx
+    push cx
+    push dx
+    push si
+    push di
+
+    ; чистим регистры
+    xor ax, ax
+    xor bx, bx
+    xor cx, cx
+    xor dx, dx
+    xor si, si
+    xor di, di
+
+    ; инициализация счетчика размером меньшего из массивов введенных чисел
+    mov bx, offset pos_array
+    mov bl, [bx]
+    mov al, bl
+    mov bx, offset neg_array
+    mov bl, [bx]
+    cmp al, bl
+    jg .pos_bigger
+    mov cl, bl
+    jmp .counter_initialized
+.pos_bigger:
+    mov cl, al
+
+.counter_initialized:
+    ; инициализация указателей на массивы с модулями чисел
+    mov si, offset pos_array + 1
+    mov di, offset neg_array + 1
+
+    ; заполнение массива mul_array
+    mov bx, offset mul_array
+    mov [bx], byte ptr cx   ; запись в массив mul_array количества элементов
+    inc bx                  ; двигаем указатель на первый результат
+    .prod_loop:
+        call clear_tmp_num   ; очистка временной переменной
+        call mul_values ; в tmp_num результат умножения модулей
+
+        ; копируем результат в массив mul_array
+        push cx
+        push si
+        mov cx, 10
+        mov si, offset tmp_num
+
+        .copy_loop:
+            mov dl, [si]
+            mov [bx], dl
+            inc si
+            inc bx
+            loop .copy_loop
+        pop si
+        pop cx
+        ; здесь копирование завершено
+
+        ; перемещаем указатели к следующим элементам:
+        add si, 10
+        add di, 10
+        loop .prod_loop
+
+    ; восстанавливаем состояние
+    pop di
+    pop si
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+
+    ret     ; возврат
+fill_mul_array endp
 
 add_value proc
     ; Процедура для копирования числа из временной переменной в соответствующий массив
@@ -516,7 +595,7 @@ mul_values proc
     xor bx, bx
     xor cx, cx
 
-    clear_tmp_num       ; очистка временной переменной
+    call clear_tmp_num  ; очистка временной переменной
     call to_hex_decimal ; преобразование второго числа к десятичному виду, результат в cx
     dec cx
     mov di, si          ; умножение реализуем как сложение num1 с самим собой num2 - 1 раз

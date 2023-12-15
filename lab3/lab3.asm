@@ -79,7 +79,7 @@ endm
     MAX_NUM    db '3276' ; старшие разряды модуля максимального числа без последнего разряда
 
     ; текстовые переменные для вывода
-    start_mess db 'Input: 6 numbers in [-32768, 32767]', 10, 'Press <Enter> after each number',10,13,'$'
+    start_mess db 'Input: 8 numbers in [-32768, 32767]', 10, 'Press <Enter> after each number',10,13,'$'
     input_mess db 'Enter number: $'
     empty_mess db 'Input Error: empty string. Try again or use ctrl+x and press enter for exit.', 10, '$'
     exit_mess  db 'Program was aborted by keybord', 10, '$'
@@ -150,7 +150,8 @@ start:
 
     ; здесь массивы pos_array и neg_array заполнены модулями соответствующих по знаку введенных чисел
     call fill_mul_array
-    mov bx, offset mul_array
+    call sum_mul_array
+    mov bx, offset tmp_res
 
     jmp exit
 
@@ -528,7 +529,7 @@ is_correct proc
 
 is_correct endp
 
-sum proc
+sum_values proc
     ; Процедура для сложения двух неотрицательных десяти разрядных двоично-десятичных чисел
     ; задано ограничение для числа: |-36768| * |36767| = 1 073 709 056, десять разрядов защищают от переполнения
     ; вход:
@@ -585,7 +586,7 @@ sum proc
     pop ax
 
     ret
-sum endp
+sum_values endp
 
 mul_values proc
     ; процедура для умножения двух неотрицательных десяти разрядных двоично-десятичных чисел
@@ -603,11 +604,11 @@ mul_values proc
     xor bx, bx
     xor cx, cx
 
-    call to_hex_decimal ; преобразование второго числа к десятичному виду, результат в cx
+    call to_hex_decimal   ; преобразование второго числа к десятичному виду, результат в cx
     dec cx
-    mov di, si          ; умножение реализуем как сложение num1 с самим собой num2 - 1 раз
+    mov di, si            ; умножение реализуем как сложение num1 с самим собой num2 - 1 раз
     .add_cycle:
-        call sum        ; результат сложения дв/дес чисел из si и di в tmp_res
+        call sum_values   ; результат сложения двоично-десятичных чисел из si и di в tmp_res
         mov si, offset tmp_res
         loop .add_cycle
 
@@ -680,5 +681,37 @@ to_hex_decimal proc
 
     ret
 to_hex_decimal endp
+
+sum_mul_array proc
+    ; Процедура для получения суммы элементов массива mul_array
+    ; подразумевается что mul_array заполнен двоично-десятичными десяти-разрядными модулями попарных произведений
+    ; результат в tmp_res
+
+    push di ; используется как указатель на адрес слагаемого (tmp_res)
+    push si ; используется как указатель на mul_array
+    push cx ; счетчик обработанных элементов
+
+    xor si, si
+    xor cx, cx
+
+    call clear_tmp_res
+
+    ; инициализация указателей
+    mov di, offset tmp_res
+    mov si, offset mul_array
+
+    mov cl, [si]         ; инициализация счетчика элементов массива
+    inc si               ; двигаем указатель на первое произведение
+
+    .sum_mul_cycle:
+        call sum_values  ; результат сложения двоично-десятичных чисел из si и di в tmp_res
+        add si, 10
+        loop .sum_mul_cycle
+
+    pop cx
+    pop si
+    pop di
+    ret
+sum_mul_array endp
 
 end start

@@ -119,8 +119,8 @@ endm
     err_flag   db 0     ; флаг ошибки во вводе для is_correct proc/цикла ввода
 
     ; проверка сложения
-    num1 db 0, 0, 0, 0, 0, 1, 2, 3, 4, 5
-    num2 db 0, 0, 0, 0, 0, 3, 2, 7, 6, 8
+    num1 db 0, 0, 0, 0, 0, 0, 0, 1, 2, 3
+    num2 db 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
 
 .stack 256
 
@@ -133,10 +133,8 @@ start:
     ; проверка сложения
     mov si, offset num1
     mov di, offset num2
-    call to_hex_decimal
     mov bx, offset tmp_num
-
-    call sum
+    call mul_values
 
     ;вызов функции 0 -  установка 3 текстового видеорежима, очистка экрана
     mov ax, 0003  ; ah=0 (номер функции), al=3 (номер режима)
@@ -518,18 +516,17 @@ mul_values proc
     xor bx, bx
     xor cx, cx
 
-
-    clear_tmp_num ; очистка временной переменной
-
-    ; преобразование второго числа к десятичному виду, результат в cx
-    add di, 9 ; перемещаем указатель на конец di
-    mov ax, 1
-    mov bx, 10
-    mov cx, 1
-    mov al, byte ptr [di]
-    mul bx
+    clear_tmp_num       ; очистка временной переменной
+    call to_hex_decimal ; преобразование второго числа к десятичному виду, результат в cx
+    dec cx
+    mov di, si          ; умножение реализуем как сложение num1 с самим собой num2 - 1 раз
+    .add_cycle:
+        call sum
+        mov si, offset tmp_num
+        loop .add_cycle
 
     pop cx
+    pop bx
     pop ax
     ret
 mul_values endp

@@ -1,5 +1,4 @@
 .MODEL SMALL
-locals
 
 print macro text ;вывод сообщений на экран
 	push ax
@@ -165,13 +164,15 @@ clear_tmp_res proc
     push si
     push cx
     mov cx, 10
-    lea si, tmp_res
-    @@cycle:
+    mov si, offset tmp_res
+    .clear_cycle:
         mov byte ptr [si], 0
         inc si
-        loop @@cycle
+        loop .clear_cycle
     pop cx
     pop si
+
+    ret
 clear_tmp_res endp
 
 fill_mul_array proc
@@ -218,13 +219,13 @@ fill_mul_array proc
     mov [bx], byte ptr cx   ; запись в массив mul_array количества элементов
     inc bx                  ; двигаем указатель на первый результат
     .prod_loop:
-        call mul_values ; в tmp_num результат умножения модулей
+        call mul_values ; в tmp_res результат умножения модулей
 
         ; копируем результат в массив mul_array
         push cx
         push si
         mov cx, 10
-        mov si, offset tmp_num
+        mov si, offset tmp_res
 
         .copy_loop:
             mov dl, [si]
@@ -546,7 +547,6 @@ sum proc
     ; очистка регистров
     xor ax, ax
     xor cx, cx
-    call clear_tmp_res  ; очистка временной переменной
 
     mov cx, 10 ; инициализируем счетчик - 10 байт числа = 10 итераций
 
@@ -591,7 +591,7 @@ mul_values proc
     ; процедура для умножения двух неотрицательных десяти разрядных двоично-десятичных чисел
     ; в si - адрес первого числа
     ; в di - адрес второго числа
-    ; результат - в res_num
+    ; результат - в tmp_res
 
     push ax
     push bx
@@ -607,8 +607,8 @@ mul_values proc
     dec cx
     mov di, si          ; умножение реализуем как сложение num1 с самим собой num2 - 1 раз
     .add_cycle:
-        call sum
-        mov si, offset tmp_num
+        call sum        ; результат сложения дв/дес чисел из si и di в tmp_res
+        mov si, offset tmp_res
         loop .add_cycle
 
     pop di

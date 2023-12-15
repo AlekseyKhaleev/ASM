@@ -10,6 +10,19 @@ print macro text ;вывод сообщений на экран
 	pop ax
 endm
 
+clear_tmp_num macro
+    push si
+    push cx
+    mov cx, 10
+    lea si, tmp_num
+    clear_loop:
+        mov byte ptr [si], 0
+        inc si
+        loop clear_loop
+    pop cx
+    pop si
+endm
+
 input macro text ;ввод строки символов
     ; сохранение состояния в стеке
 	push ax
@@ -489,5 +502,34 @@ sum proc
 
     ret
 sum endp
+
+mul_values proc
+    ; процедура для умножения двух неотрицательных десяти разрядных двоично-десятичных чисел
+    ; в si - адрес первого числа
+    ; в di - адрес второго числа
+    ; результат - в tmp_num
+
+    push ax
+    push bx
+    push cx
+
+    xor ax, ax
+    xor bx, bx
+    xor cx, cx
+
+    clear_tmp_num ; очистка временной переменной
+
+    ; преобразование второго числа к десятичному виду, результат в cx
+    add di, 9 ; перемещаем указатель на конец di
+    mov ax, 1
+    mov bx, 10
+    mov cx, 1
+    mov al, byte ptr [di]
+    mul al,
+
+    pop cx
+    pop ax
+    ret
+mul_values endp
 
 end start

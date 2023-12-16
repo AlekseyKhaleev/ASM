@@ -1,4 +1,4 @@
-.MODEL SMALL
+.MODEL small
 
 print macro text ;вывод сообщений на экран
 	push ax
@@ -83,11 +83,7 @@ endm
     neg_flag   db 0     ; флаг наличия знака '-' для is_correct proc
     err_flag   db 0     ; флаг ошибки во вводе для is_correct proc/цикла ввода
 
-    ; проверка сложения
-    num1 db 0, 0, 0, 0, 0, 0, 0, 1, 2, 3
-    num2 db 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
-
-.stack 256
+.stack 512
 
 .code
 start:

@@ -1,10 +1,9 @@
 def get_numbers():
-    max_size = 10
+    max_size = 8
     nums_arr = []
     while len(nums_arr) < max_size:
         print(f'Enter next number ({max_size - len(nums_arr)} remains):')
-        num = input()
-        if is_correct(num):
+        if is_correct(num := input()):
             nums_arr.append(int(num))
         else:
             print('Incorrect input. Try again.\n')
@@ -27,6 +26,4 @@ def process_array(nums_arr: list):
 
 
 if __name__ == '__main__':
-    numbers = get_numbers()
-    print(numbers)
-    print(process_array(numbers))
+    print(process_array(get_numbers()))

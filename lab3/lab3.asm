@@ -43,28 +43,6 @@ input macro text ;ввод строки символов
     pop bx
 	pop dx
 	pop ax
-
-endm
-
-in_to_out macro
-    push bx
-    push si
-    push dx
-
-    xor bx, bx
-    xor si, si
-    xor dx, dx
-
-    mov bx, offset in_str
-    add bx, 2
-    mov si, offset out_str
-    mov dx, [bx]
-;    xor dh, dh
-    mov [si], dx
-
-    pop dx
-    pop si
-    pop bx
 endm
 
 .data
@@ -93,7 +71,8 @@ endm
                                      ; первый байт tmp_num - знаковый,
                                      ; все операции над 10 разрядными двоично-десятичными числами (с незначащими нулями)
     in_str     db 7, ?, 6 dup (?)    ; буфер ввода 1 байт размер буфера, второй -количество введенных символов
-    out_str    db 6 dup (' '),'$'    ; буфер вывода
+    res_str    db '-', 11 dup ('$')  ; буфер для преобразования результата в строку
+                                     ; (произведения разных знаков, а также их последующие суммы всегда отрицательны)
 
     ; массивы, первый байт в массиве для учета количества записанных чисел
     pos_array  db 0, 4 dup(10 dup(?)) ; массив для пяти модулей положительных двоично-десятичных чисел размером 5 байт
@@ -151,9 +130,9 @@ start:
     ; здесь массивы pos_array и neg_array заполнены модулями соответствующих по знаку введенных чисел
     call fill_mul_array
     call sum_mul_array
-    mov bx, offset tmp_res
-
-    jmp exit
+    call result_to_string
+    print res_str
+    print carret
 
 exit:
     ; завершение программы
@@ -713,5 +692,46 @@ sum_mul_array proc
     pop di
     ret
 sum_mul_array endp
+
+result_to_string proc
+    ; Процедура для наполнения буфера res_str символами численного результата (модуля)
+    ; подразумевается что буфер tmp_res содержит результат вычисления суммы попарных (разделенных по знаку)
+    ; произведений введенных чисел
+    push si ; используется как указатель на tmp_res
+    push di ; используется как указатель на res_str
+    push ax ; используется как промежуточная переменная для обработки символа
+    push cx ; счетчик обработанных символов (байт)
+
+    ; очистка регистров
+    xor si, si
+    xor di, di
+    xor ax, ax
+    xor cx, cx
+
+    mov si, offset tmp_res
+    mov di, offset res_str + 1    ; пропускаем первый байт - символ '-'
+    mov cx, 10
+
+    .del_zeros:
+        mov al, [si]
+        cmp al, 0
+        jne .true_num_cycle
+        dec cx
+        inc si
+        jmp .del_zeros
+    .true_num_cycle:
+        mov al, [si]
+        add al, 30h
+        mov [di], al
+        inc di
+        inc si
+        loop .true_num_cycle
+
+    pop ax
+    pop cx
+    pop di
+    pop si
+    ret
+result_to_string endp
 
 end start

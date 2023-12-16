@@ -65,7 +65,7 @@ endm
     carret     db 10, '$'
 
     ; буферные переменные
-    tmp_res    db 10 dup(?)          ; переменная для промежуточного сохранения результата сложения/умножения
+    tmp_res    db 10 dup(0)          ; переменная для промежуточного сохранения результата сложения/умножения
                                      ; двух десяти-разрядных беззнаковых двоично-десятичных чисел
     tmp_num    db 0, 10 dup(?)       ; переменная для промежуточного сохранения двоично-десятичного представления числа
                                      ; первый байт tmp_num - знаковый,
@@ -195,14 +195,16 @@ fill_mul_array proc
     mov [bx], byte ptr cx   ; запись в массив mul_array количества элементов
     inc bx                  ; двигаем указатель на первый результат
     .prod_loop:
+        mov err_flag, 0
         call mul_values ; в tmp_res результат умножения модулей
-
+        cmp err_flag, 1
         ; копируем результат в массив mul_array
         push cx
         push si
-        mov cx, 10
+        je .no_mul_flag
         mov si, offset tmp_res
-
+    .no_mul_flag:
+        mov cx, 10
         .copy_loop:
             mov dl, [si]
             mov [bx], dl
@@ -579,20 +581,37 @@ mul_values proc
     xor bx, bx
     xor cx, cx
 
+    ; проверка на ноль в первом числе
+    push di
+    mov di, si
+    call to_hex_decimal
+    pop di
+    cmp cx, 0
+    je .no_mul
+
+    ; проверка на 1 во втором числе
     call to_hex_decimal   ; преобразование второго числа к десятичному виду, результат в cx
+    cmp cx, 1
+    je .no_mul
+
     dec cx
     mov di, si            ; умножение реализуем как сложение num1 с самим собой num2 - 1 раз
     .add_cycle:
         call sum_values   ; результат сложения двоично-десятичных чисел из si и di в tmp_res
         mov si, offset tmp_res
         loop .add_cycle
+    jmp .mul_exit
 
-    pop di
-    pop si
-    pop cx
-    pop bx
-    pop ax
-    ret
+    .no_mul:
+        mov err_flag, 1
+
+    .mul_exit:
+        pop di
+        pop si
+        pop cx
+        pop bx
+        pop ax
+        ret
 mul_values endp
 
 to_hex_decimal proc

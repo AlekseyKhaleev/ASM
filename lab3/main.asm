@@ -1,12 +1,24 @@
+.8086
+.MODEL SMALL
+.STACK 100h
+
+extrn clear_tmp_res:proc
+extrn fill_mul_array:proc
+extrn add_value:proc
+extrn to_bin_decimal:proc
+extrn to_hex_decimal:proc
+extrn is_correct:proc
+extrn sum_values:proc
+extrn mul_values:proc
+extrn sum_mul_array:proc
+extrn result_to_string:proc
+
 include macros.asm
-include proc.asm
+include data.asm
 
-.model SMALL
-
-.stack 256h
-
-segment para public 'code'
-assume cs:code
+code segment para public 'code'
+org 100h
+assume cs:code, ds:data
 start:
    ; инициализация памяти
     mov ax, @data
@@ -51,12 +63,8 @@ start:
     print res_str
     print carret
 
-exit:
-    ; завершение программы
-    mov ah, 4ch
-    mov al, 0
-    int 21h
-    ret
+    exit ; завершение программы
 
+code ends
 
 end start

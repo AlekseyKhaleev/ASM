@@ -1,4 +1,4 @@
-data segment public 'data'
+.data
  ; константы
     NEGATIVE         equ 2Dh ; шестнадцатеричный ascii код знака '-'
     NUMS_SIZE        equ 8h  ; количество вводимых чисел
@@ -35,5 +35,5 @@ data segment public 'data'
     ; флаги
     neg_flag   db 0     ; флаг наличия знака '-' для is_correct proc
     err_flag   db 0     ; флаг ошибки во вводе для is_correct proc/цикла ввода
-data ends
+
 end

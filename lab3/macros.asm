@@ -1,3 +1,4 @@
+
 print macro text ;вывод сообщений на экран
 	push ax
 	push dx
@@ -43,4 +44,10 @@ input macro text ;ввод строки символов
 	pop ax
 endm
 
-end
+exit macro
+    ; завершение программы
+    mov ah, 4ch
+    mov al, 0
+    int 21h
+    ret
+endm

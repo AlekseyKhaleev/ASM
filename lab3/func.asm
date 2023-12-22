@@ -1,20 +1,3 @@
-.8086
-.MODEL SMALL
-
-public is_correct
-public clear_tmp_res
-public add_value
-public fill_mul_array
-public to_bin_decimal
-public to_hex_decimal
-public sum_values
-public mul_values
-public sum_mul_array
-public result_to_string
-
-_CODE SEGMENT PARA PUBLIC 'CODE'
- ASSUME CS:_CODE, DS:_CODE
-
 
 is_correct proc
     ; Процедура для проверки корректности введенного числа
@@ -141,6 +124,7 @@ is_correct proc
         ret
 
 is_correct endp
+
 add_value proc
     ; Процедура для копирования числа из временной переменной в соответствующий массив
     ; число представлено в двоично-десятичном виде с незначащими нулями (размер на выходе 5 байт)
@@ -346,19 +330,19 @@ to_bin_decimal proc
     ; и двигаем указатель, если нет прыгаем к основному циклу обработки
     cmp byte ptr [si], NEGATIVE
         jne .positive
-        mov [di], 1
+        mov [di], byte ptr 1 ; запись знакового байта
         inc si
         dec cx
         dec dl      ; если был знак минус уменьшаем количество символов в буфере на 1
         inc di
         jmp .null_filling
     .positive:
-        mov [di], 0
+        mov [di], byte ptr 0  ; запись знакового байта
         inc di      ; если число позитивное двигаем указатель выходного буфера на первый символ
     .null_filling:  ; заполнение незначащими нулями
         cmp dl, 10  ; все числа десяти разрядные с незначащими нулями
         jge .cycle
-        mov [di], 0
+        mov [di], byte ptr 0
         inc di
         inc dl
         jmp .null_filling
@@ -629,8 +613,3 @@ result_to_string proc
     ret
 
 result_to_string endp
-
-_CODE ENDS
-
-
-END

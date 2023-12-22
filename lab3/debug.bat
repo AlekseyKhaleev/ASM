@@ -1,14 +1,15 @@
 @echo off
+@echo off
 echo Compiling...
-..\tasm\tasm lab3.asm
+..\tasm\tasm main.asm build\ build\main.lst
 if errorlevel 1 goto buildFail
 
 echo Linking...
-..\tasm\tlink lab3.obj
+..\tasm\tlink /3 build\main.obj
 if errorlevel 1 goto linkingFail
 
 echo Debugging...
-..\tasm\td lab3.exe
+..\tasm\td build\main.exe
 if errorlevel 1 goto runFail
 echo Success!
 goto end

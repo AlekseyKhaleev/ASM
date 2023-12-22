@@ -1,4 +1,5 @@
 
+
 print macro text ;вывод сообщений на экран
 	push ax
 	push dx
@@ -36,7 +37,7 @@ input macro text ;ввод строки символов
 	cmp bl, 18h  ; проверка на ввод ctrl+x (= выход)
 	jne .not_exit
 	print exit_mess
-	jmp exit
+	jmp .end_program
 .not_exit:
 	; возврат состояния из стека
     pop bx

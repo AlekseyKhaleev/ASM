@@ -1,5 +1,4 @@
 @echo off
-@echo off
 echo Compiling...
 ..\tasm\tasm main.asm build\ build\main.lst
 if errorlevel 1 goto buildFail

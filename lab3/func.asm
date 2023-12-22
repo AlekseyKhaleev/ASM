@@ -592,6 +592,8 @@ result_to_string proc
     mov cx, 10
 
     .del_zeros:
+        cmp cx, 1
+        je .true_num_cycle
         mov al, [si]
         cmp al, 0
         jne .true_num_cycle
@@ -606,8 +608,8 @@ result_to_string proc
         inc si
         loop .true_num_cycle
 
-    pop ax
     pop cx
+    pop ax
     pop di
     pop si
     ret

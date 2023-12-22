@@ -1,4 +1,4 @@
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 1
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 1
 main.asm
 
 
@@ -60,7 +60,7 @@ main.asm
 1    55					 mov al, 0
 1    56					 int 21h
 1    57					 ret
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 2
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 2
 main.asm
 
 
@@ -122,7 +122,7 @@ main.asm
 1   112									  ; двух десяти-разрядных		    +
     113				     беззнаковых двоично-десятичных	чисел
 1   114	00E1  00 0A*(??)		 tmp_num    db 0, 10 dup(?)	  ; переменная для	промежуточного+
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 3
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 3
 main.asm
 
 
@@ -184,7 +184,7 @@ main.asm
     169				     add_value proc)
     170	001A  BE 0101r			 mov si, offset	pos_array + 1
     171	001D  BF 012Ar			 mov di, offset	neg_array + 1
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 4
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 4
 main.asm
 
 
@@ -246,7 +246,7 @@ main.asm
 2   226	006B  58			     pop ax
 1   227	006C  EB 4D 90			     jmp .end_program
 1   228	006F			     .not_exit:
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 5
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 5
 main.asm
 
 
@@ -308,7 +308,7 @@ main.asm
 1   283	00B2  BA 00D5r			     mov dx,offset carret
 1   284	00B5  B4 09			     mov ah,9
 1   285	00B7  CD 21			     int 21h
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 6
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 6
 main.asm
 
 
@@ -370,7 +370,7 @@ main.asm
     340				     максимального	диапазона
 1   341
 1   342	00EE  8A 84 00ECr		 mov al, in_str[si]; Загрузка текущего элемента	буфера в	AL
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 7
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 7
 main.asm
 
 
@@ -432,7 +432,7 @@ main.asm
     397				     поразрядной проверке
 1   398	0133  BE 0002				 mov si, 2
 1   399	0136  B9 0001				 mov cx, 1
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 8
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 8
 main.asm
 
 
@@ -494,7 +494,7 @@ main.asm
 1   454	0173			     add_value proc
 1   455					 ; Процедура для копирования числа из временной	    +
     456				     переменной в соответствующий массив
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 9
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 9
 main.asm
 
 
@@ -556,7 +556,7 @@ main.asm
 1   511	019D  A2 0100r			     mov pos_array, al
 1   512
 1   513					 ; по-байтовая запись модуля очередного	числа в	    +
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 10
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 10
 main.asm
 
 
@@ -618,7 +618,7 @@ main.asm
 1   568	01CB  33 F6			 xor si, si
 1   569	01CD  33 FF			 xor di, di
 1   570
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 11
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 11
 main.asm
 
 
@@ -680,7 +680,7 @@ main.asm
 1   625	021C  5E			 pop si
 1   626	021D  5A			 pop dx
 1   627	021E  59			 pop cx
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 12
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 12
 main.asm
 
 
@@ -742,7 +742,7 @@ main.asm
 1   682
 1   683					 ; инициализируем	счетчик числом символов в	строке
 1   684	023A  46			 inc si
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 13
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 13
 main.asm
 
 
@@ -764,7 +764,7 @@ main.asm
     699				     основному	циклу обработки
 1   700	0242  80 3C 2D			 cmp byte ptr [si], NEGATIVE
 1   701	0245  75 0B			     jne .positive
-1   702	0247  C6 05 01			     mov [di], byte ptr	1
+1   702	0247  C6 05 01			     mov [di], byte ptr	1 ; запись знакового байта
 1   703	024A  46			     inc si
 1   704	024B  49			     dec cx
 1   705	024C  FE CA			     dec dl	 ; если был знак минус уменьшаем		    +
@@ -772,7 +772,7 @@ main.asm
 1   707	024E  47			     inc di
 1   708	024F  EB 05 90			     jmp .null_filling
 1   709	0252				 .positive:
-1   710	0252  C6 05 00			     mov [di], byte ptr	0
+1   710	0252  C6 05 00			     mov [di], byte ptr	0  ; запись знакового байта
 1   711	0255  47			     inc di	 ; если число позитивное двигаем		    +
     712				     указатель	выходного буфера	на первый символ
 1   713	0256				 .null_filling:	 ; заполнение	незначащими нулями
@@ -804,7 +804,7 @@ main.asm
 1   739	0273  5B			 pop bx
 1   740	0274  58			 pop ax
 1   741
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 14
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 14
 main.asm
 
 
@@ -866,7 +866,7 @@ main.asm
 1   796	029A  4B			     dec bx
 1   797	029B  88 97 00D7r		     mov tmp_res[bx], dl   ; записываем остаток в разряд	    +
     798				     результата
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 15
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 15
 main.asm
 
 
@@ -928,7 +928,7 @@ main.asm
 1   853	02CC  E8 FFA7			     call sum_values   ; результат сложения				    +
     854				     двоично-десятичных чисел из si и di в tmp_res
 1   855	02CF  BE 00D7r			     mov si, offset tmp_res
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 16
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 16
 main.asm
 
 
@@ -990,7 +990,7 @@ main.asm
 1   910	02FA  74 1A			 je .conv_end
 1   911	02FC  33 C0			 xor ax, ax
 1   912	02FE  8A 05			 mov al, [di]	 ; загружаем символ из	строки
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 17
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 17
 main.asm
 
 
@@ -1052,7 +1052,7 @@ main.asm
 1   967	032B  8A 0C			 mov cl, [si]	      ;	инициализация счетчика элементов	    +
     968				     массива
 1   969	032D  46			 inc si		      ;	двигаем указатель на первое		    +
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 18
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 18
 main.asm
 
 
@@ -1096,39 +1096,41 @@ main.asm
 1  1006	034C  B9 000A			 mov cx, 10
 1  1007
 1  1008	034F				 .del_zeros:
-1  1009	034F  8A 04			     mov al, [si]
-1  1010	0351  3C 00			     cmp al, 0
-1  1011	0353  75 04			     jne .true_num_cycle
-1  1012	0355  49			     dec cx
-1  1013	0356  46			     inc si
-1  1014	0357  EB F6			     jmp .del_zeros
-1  1015	0359				 .true_num_cycle:
-1  1016	0359  8A 04			     mov al, [si]
-1  1017	035B  04 30			     add al, 30h
-1  1018	035D  88 05			     mov [di], al
-1  1019	035F  47			     inc di
-1  1020	0360  46			     inc si
-1  1021	0361  E2 F6			     loop .true_num_cycle
-1  1022
-1  1023	0363  58			 pop ax
-1  1024	0364  59			 pop cx
-1  1025	0365  5F			 pop di
-1  1026	0366  5E			 pop si
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 19
+1  1009	034F  83 F9 01			     cmp cx, 1
+1  1010	0352  74 0A			     je	.true_num_cycle
+1  1011	0354  8A 04			     mov al, [si]
+1  1012	0356  3C 00			     cmp al, 0
+1  1013	0358  75 04			     jne .true_num_cycle
+1  1014	035A  49			     dec cx
+1  1015	035B  46			     inc si
+1  1016	035C  EB F1			     jmp .del_zeros
+1  1017	035E				 .true_num_cycle:
+1  1018	035E  8A 04			     mov al, [si]
+1  1019	0360  04 30			     add al, 30h
+1  1020	0362  88 05			     mov [di], al
+1  1021	0364  47			     inc di
+1  1022	0365  46			     inc si
+1  1023	0366  E2 F6			     loop .true_num_cycle
+1  1024
+1  1025	0368  59			 pop cx
+1  1026	0369  58			 pop ax
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 19
 main.asm
 
 
 
-1  1027	0367  C3			 ret
-1  1028
-1  1029	0368			     result_to_string endp
+1  1027	036A  5F			 pop di
+1  1028	036B  5E			 pop si
+1  1029	036C  C3			 ret
 1  1030
-   1031
-   1032	0000			     .stack
-   1033	0368  0100*(??)			 db 100h dup(?)
-   1034
-   1035				     end start
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 20
+1  1031	036D			     result_to_string endp
+1  1032
+   1033
+   1034	0000			     .stack
+   1035	036D  0100*(??)			 db 100h dup(?)
+   1036
+   1037				     end start
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 20
 Symbol Table
 
 
@@ -1175,11 +1177,11 @@ Symbol Name			  Type	 Value
 .RETRY				  Near	 _TEXT:002E
 .SUM_CYCLE			  Near	 _TEXT:0289
 .SUM_MUL_CYCLE			  Near	 _TEXT:032E
-.TRUE_NUM_CYCLE			  Near	 _TEXT:0359
+.TRUE_NUM_CYCLE			  Near	 _TEXT:035E
 .ZERO_RANK			  Near	 _TEXT:0312
-??DATE				  Text	 "12/21/23"
+??DATE				  Text	 "12/22/23"
 ??FILENAME			  Text	 "main	  "
-??TIME				  Text	 "21:58:19"
+??TIME				  Text	 "19:50:01"
 ??VERSION			  Number 0205
 @CODE				  Text	 _TEXT
 @CODESIZE			  Text	 0
@@ -1190,7 +1192,7 @@ Symbol Name			  Type	 Value
 @FILENAME			  Text	 MAIN
 @MODEL				  Text	 2
 @WORDSIZE			  Text	 2
-Turbo Assembler	 Version 2.51	     12/21/23 21:58:19	    Page 21
+Turbo Assembler	 Version 2.51	     12/22/23 19:50:02	    Page 21
 Symbol Table
 
 
@@ -1240,5 +1242,5 @@ Groups & Segments		  Bit Size Align  Combine Class
 DGROUP				  Group
   STACK				  16  0400 Para	  Stack	  STACK
   _DATA				  16  017D Word	  Public  DATA
-_TEXT				  16  0468 Word	  Public  CODE
+_TEXT				  16  046D Word	  Public  CODE
 

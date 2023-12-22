@@ -46,6 +46,7 @@ start:
     call fill_mul_array
     call sum_mul_array
     call result_to_string
+    print output_mess
     print res_str
     print carret
 

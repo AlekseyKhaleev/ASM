@@ -10,6 +10,7 @@
     ; текстовые переменные для вывода
     start_mess db 'Input: 8 numbers in [-32768, 32767]', 10, 'Press <Enter> after each number',10,13,'$'
     input_mess db 'Enter number: $'
+    output_mess db 'output (sum of pairwise products of numbers of different signs):', 10, 13, '$'
     empty_mess db 'Input Error: empty string. Try again or use ctrl+x and press enter for exit.', 10, '$'
     exit_mess  db 'Program was aborted by keybord', 10, '$'
     err_mess   db 'Input error!', 10, '$'
@@ -21,8 +22,8 @@
     tmp_num    db 0, 10 dup(?)       ; переменная для промежуточного сохранения двоично-десятичного представления числа
                                      ; первый байт tmp_num - знаковый,
                                      ; все операции над 10 разрядными двоично-десятичными числами (с незначащими нулями)
-    in_str     db 7, ?, 6 dup (?)    ; буфер ввода 1 байт размер буфера, второй -количество введенных символов
-    res_str    db '-', 11 dup ('$')  ; буфер для преобразования результата в строку
+    in_str     db 7, ?, 6 dup (?)      ; буфер ввода 1 байт размер буфера, второй -количество введенных символов
+    res_str    db 12 dup ('$')       ; буфер для преобразования результата в строку
                                      ; (произведения разных знаков, а также их последующие суммы всегда отрицательны)
 
     ; массивы, первый байт в массиве для учета количества записанных чисел

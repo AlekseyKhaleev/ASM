@@ -607,7 +607,18 @@ result_to_string proc
         inc di
         inc si
         loop .true_num_cycle
-
+    ; проверка на 0 (добавляем минус если результат не равен нулю)
+    mov di, offset res_str
+    mov bx, [di]
+    cmp bh, 30h
+    jne .add_neg
+    mov [di], byte ptr 30h
+    inc di
+    mov [di], byte ptr '$'
+    jmp .end_res_to_str
+.add_neg:
+    mov [di], byte ptr '-'
+.end_res_to_str:
     pop cx
     pop ax
     pop di

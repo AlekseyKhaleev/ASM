@@ -1,5 +1,4 @@
 
-
 print macro text ;вывод сообщений на экран
 	push ax
 	push dx

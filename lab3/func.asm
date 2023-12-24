@@ -612,9 +612,10 @@ result_to_string proc
     mov bx, [di]
     cmp bh, 30h
     jne .add_neg
-    mov [di], byte ptr 30h
+    ; если результат равен 0
+    mov [di], byte ptr 30h ; первый байт 0
     inc di
-    mov [di], byte ptr '$'
+    mov [di], byte ptr '$' ; второй байт символ завершения строки
     jmp .end_res_to_str
 .add_neg:
     mov [di], byte ptr '-'

@@ -1,4 +1,4 @@
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 1
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 1
 main.asm
 
 
@@ -60,7 +60,7 @@ main.asm
 1    55					 mov ah, 4ch
 1    56					 mov al, 0
 1    57					 int 21h
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 2
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 2
 main.asm
 
 
@@ -122,7 +122,7 @@ main.asm
     112	      20 77 61 73 20 61	62+
     113	      6F 72 74 65 64 20	62+
     114	      79 20 6B 65 79 62	6F+
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 3
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 3
 main.asm
 
 
@@ -184,7 +184,7 @@ main.asm
 1   169	000C  BA 0004r			     mov dx,offset start_mess
 1   170	000F  B4 09			     mov ah,9
 1   171	0011  CD 21			     int 21h
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 4
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 4
 main.asm
 
 
@@ -246,7 +246,7 @@ main.asm
 1   226	0057  8B DA			 mov bx, dx
 1   227	0059  43			     inc bx
 1   228	005A  8A 1F			     mov bl, [bx] ; первый введенный символ
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 5
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 5
 main.asm
 
 
@@ -308,7 +308,7 @@ main.asm
     283	00A2  E8 02A8			 call result_to_string
     284					 print output_mess
 1   285	00A5  50			     push ax
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 6
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 6
 main.asm
 
 
@@ -370,7 +370,7 @@ main.asm
 1   340	00D7  33 C9			 xor cx, cx
 1   341	00D9  33 D2			 xor dx, dx
 1   342	00DB  33 F6			 xor si, si
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 7
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 7
 main.asm
 
 
@@ -432,7 +432,7 @@ main.asm
 1   397	0127				     .neg_start:
 1   398	0127  83 FF 06				 cmp di, MAX_NEG_LEN ; сравнение количества введенных   +
     399				     символов и максимального количества разрядов
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 8
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 8
 main.asm
 
 
@@ -494,7 +494,7 @@ main.asm
     454				     диапазона	переход к ошибке
 1   455	016F  EB 06 90				 jmp .corr_end
 1   456
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 9
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 9
 main.asm
 
 
@@ -556,7 +556,7 @@ main.asm
 1   511	0190  A0 016Cr			 mov al, neg_array
 1   512	0193  3C 04			 cmp al, 4
 1   513	0195  74 24			 je .add_value_exit ; в программе не может быть более	4х пар, +
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 10
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 10
 main.asm
 
 
@@ -618,7 +618,7 @@ main.asm
 1   568
 1   569	01CF  C3			 ret
 1   570	01D0			     clear_tmp_res endp
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 11
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 11
 main.asm
 
 
@@ -680,7 +680,7 @@ main.asm
 1   625	020A  E8 00B0			     call mul_values ; в tmp_res результат умножения	модулей
 1   626	020D  80 3E 01BFr 01		     cmp err_flag, 1
 1   627					     ; копируем	результат в массив mul_array
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 12
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 12
 main.asm
 
 
@@ -742,7 +742,7 @@ main.asm
 1   682					 ; то	предварительная очистка буфера перед новой    +
     683				     записью не требуется
 1   684
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 13
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 13
 main.asm
 
 
@@ -804,7 +804,7 @@ main.asm
 1   739	0269				 .null_filling:	 ; заполнение	незначащими нулями
 1   740	0269  80 FA 0A			     cmp dl, 10	 ; все числа десяти разрядные с			    +
     741				     незначащими нулями
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 14
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 14
 main.asm
 
 
@@ -866,7 +866,7 @@ main.asm
 1   796
 1   797					 ; двигаем указатели на последние разряды (байты)    +
     798				     чисел
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 15
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 15
 main.asm
 
 
@@ -928,7 +928,7 @@ main.asm
 1   853	02BF  51			 push cx
 1   854	02C0  56			 push si
 1   855	02C1  57			 push di
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 16
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 16
 main.asm
 
 
@@ -990,7 +990,7 @@ main.asm
 1   910					 ; то	переполнения регистра cx не случится в		    +
     911				     процессе перевода числа в нужный вид
 1   912
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 17
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 17
 main.asm
 
 
@@ -1052,7 +1052,7 @@ main.asm
 1   967
 1   968	032D  C3			 ret
 1   969	032E			     to_hex_decimal endp
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 18
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 18
 main.asm
 
 
@@ -1114,7 +1114,7 @@ main.asm
 1  1024	0351  33 F6			 xor si, si
 1  1025	0353  33 FF			 xor di, di
 1  1026	0355  33 C0			 xor ax, ax
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 19
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 19
 main.asm
 
 
@@ -1170,7 +1170,7 @@ main.asm
    1075	0397  0100*(??)			 db 100h dup(?)
    1076
    1077				     end start
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 20
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 20
 Symbol Table
 
 
@@ -1223,7 +1223,7 @@ Symbol Name			  Type	 Value
 .ZERO_RANK			  Near	 _TEXT:0325
 ??DATE				  Text	 "12/25/23"
 ??FILENAME			  Text	 "main	  "
-??TIME				  Text	 "23:37:46"
+??TIME				  Text	 "23:59:12"
 ??VERSION			  Number 0205
 @CODE				  Text	 _TEXT
 @CODESIZE			  Text	 0
@@ -1232,7 +1232,7 @@ Symbol Name			  Type	 Value
 @DATA				  Text	 DGROUP
 @DATASIZE			  Text	 0
 @FILENAME			  Text	 MAIN
-Turbo Assembler	 Version 2.51	     12/25/23 23:37:47	    Page 21
+Turbo Assembler	 Version 2.51	     12/25/23 23:59:12	    Page 21
 Symbol Table
 
 

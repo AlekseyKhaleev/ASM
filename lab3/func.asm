@@ -149,6 +149,8 @@ add_value proc
 
     ; увеличиваем счетчик записанных чисел в массиве отрицательных чисел
     mov al, neg_array
+    cmp al, 4
+    je .add_value_exit ; в программе не может быть более 4х пар, предупреждение выхода за границы массива
     inc al
     mov neg_array, al
 
@@ -165,6 +167,8 @@ add_value proc
     .pos_num:
         ; увеличиваем счетчик записанных чисел в массиве положительных (неотрицательных) чисел
         mov al, pos_array
+        cmp al, 4
+        je .add_value_exit ; в программе не может быть более 4х пар, предупреждение выхода за границы массива
         inc al
         mov pos_array, al
 
@@ -228,10 +232,10 @@ fill_mul_array proc
     mov bx, offset neg_array
     mov bl, [bx]
     cmp al, bl
-    jg .pos_bigger
+    jl .pos_lower
     mov cl, bl
     jmp .counter_initialized
-.pos_bigger:
+.pos_lower:
     mov cl, al
 
 .counter_initialized:

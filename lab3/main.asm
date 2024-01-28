@@ -44,11 +44,24 @@ start:
 
     ; здесь массивы pos_array и neg_array заполнены модулями соответствующих по знаку введенных чисел
     call fill_mul_array
+    ; проверка наличия хотя бы одной пары
+    push bx
+    xor bx, bx
+    mov bx, offset no_pairs_flag
+    mov bx, [bx]
+    cmp bl, 1h
+    je .no_pairs_err
+    ; продолжение алгоритма, если есть хотя бы одна пара с разными знаками
     call sum_mul_array
     call result_to_string
     print output_mess
     print res_str
     print carret
+
+    jmp .end_program
+
+    .no_pairs_err:
+        print no_pairs_mess
 
 .end_program:
     exit ; завершение программы

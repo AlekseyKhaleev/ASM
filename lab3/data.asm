@@ -14,6 +14,7 @@
     empty_mess db 'Input Error: empty string. Try again or use ctrl+x and press enter for exit.', 10, '$'
     exit_mess  db 'Program was aborted by keybord', 10, '$'
     err_mess   db 'Input error!', 10, '$'
+    no_pairs_mess db 'An error occurred: all numbers have the same sign', 10, '$'
     carret     db 10, '$'
 
     ; буферные переменные
@@ -34,4 +35,5 @@
     ; флаги
     neg_flag   db 0     ; флаг наличия знака '-' для is_correct proc
     err_flag   db 0     ; флаг ошибки во вводе для is_correct proc/цикла ввода
+    no_pairs_flag db 0  ; флаг ошибки, сигнал о том. что ввдены числа одного знака
 

@@ -231,6 +231,14 @@ fill_mul_array proc
     mov al, bl
     mov bx, offset neg_array
     mov bl, [bx]
+
+    ; проверка наличия хотя бы одной пары
+    cmp al, 0h
+    je .zero_array
+    cmp bl, 0h
+    je .zero_array
+
+    ; продолжение алгоритма, если есть хотя бы одна пара значений
     cmp al, bl
     jl .pos_lower
     mov cl, bl
@@ -272,6 +280,9 @@ fill_mul_array proc
         add si, 10
         add di, 10
         loop .prod_loop
+    .zero_array:
+        mov bx, offset no_pairs_flag
+        mov [bx], 1h   ; установка флага ошибки (все числа одного знака)
 
     ; восстанавливаем состояние
     pop di
@@ -569,7 +580,6 @@ sum_mul_array proc
         call sum_values  ; результат сложения двоично-десятичных чисел из si и di в tmp_res
         add si, 10
         loop .sum_mul_cycle
-
     pop cx
     pop si
     pop di
